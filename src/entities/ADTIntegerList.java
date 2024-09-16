@@ -1,18 +1,20 @@
 package entities;
 
-import Exceptions.ArrayFullException;
-import Exceptions.ZeroArraySizeException;
+import exceptions.EmptyListException;
+import exceptions.IndexOutOfBoundsException;
+import exceptions.ListFullException;
+import exceptions.ZeroListSizeException;
 
 public class ADTIntegerList {
     private final int[] LIST;
     private final int LENGTH;
     private int elements;
 
-    public ADTIntegerList(int LENGTH) throws NegativeArraySizeException, ZeroArraySizeException {
+    public ADTIntegerList(int LENGTH) throws NegativeArraySizeException, ZeroListSizeException {
         elements = 0;
 
         if (LENGTH < 0) throw new NegativeArraySizeException("Invalid array size.");
-        if (LENGTH == 0) throw new ZeroArraySizeException("Invalid array size.");
+        if (LENGTH == 0) throw new ZeroListSizeException("Invalid array size.");
 
         this.LENGTH = LENGTH;
         LIST = new int[LENGTH];
@@ -26,10 +28,10 @@ public class ADTIntegerList {
         return elements == LENGTH;
     }
 
-    public void insertAtStart(int element) throws ArrayFullException {
-        if (isFull()) throw new ArrayFullException("Cannot add element at the start. The array is full.");
+    public void insertAtStart(int element) throws ListFullException {
+        if (isFull()) throw new ListFullException("Cannot add element at the start. The array is full.");
 
-        for (int i = LENGTH - 1; i > 0; i--) {
+        for (int i = elements; i > 0; i--) {
             LIST[i] = LIST[i - 1];
         }
 
@@ -37,19 +39,62 @@ public class ADTIntegerList {
         elements++;
     }
 
-    public void insertAtEnd(int element) {
-        if (isFull()) throw new ArrayFullException("Cannot add element at the end. The array is full.");
+    public void removeAtStart() throws EmptyListException {
+        if (isEmpty()) throw new EmptyListException("Cannot remove element at the start. The array is empty.");
+
+        for (int i = 0; i < elements; i++) {
+            LIST[i] = LIST[i + 1];
+        }
+
+        elements--;
+    }
+
+    public void insertAtEnd(int element) throws ListFullException {
+        if (isFull()) throw new ListFullException("Cannot add element at the end. The array is full.");
 
         LIST[elements] = element;
         elements++;
     }
 
-    public int getLENGTH() {
-        return LENGTH;
+    public void removeAtEnd() throws EmptyListException {
+        if (isEmpty()) throw new EmptyListException("Cannot remove element at the end. The array is empty");
+
+        LIST[elements - 1] = 0;
+        elements--;
     }
 
-    public int getElements() {
-        return elements;
+    public void insertAtIndex(int index, int element) throws ListFullException, ArrayIndexOutOfBoundsException,
+            IndexOutOfBoundsException {
+        if (isFull()) throw new ListFullException("Cannot add element at index: " + index + ". The array is full.");
+
+        if (index == elements) {
+            insertAtEnd(element);
+            return;
+        }
+        else if (index < 0) throw new ArrayIndexOutOfBoundsException("Invalid index.");
+        else if (index > elements) throw new IndexOutOfBoundsException("Cannot add element after the end of elements.");
+
+        for (int i = elements; i > index; i--) {
+            LIST[i] = LIST[i - 1];
+        }
+
+        LIST[index] = element;
+        elements++;
+    }
+
+    public void removeAtIndex(int index) throws EmptyListException, ArrayIndexOutOfBoundsException,
+            IndexOutOfBoundsException {
+        if (isEmpty()) throw new EmptyListException("cannot remove element at index: " + index +
+                ". The array is empty.");
+
+        if (index >= elements) throw new IndexOutOfBoundsException("Cannot remove no element.");
+        else if (index < 0) throw new ArrayIndexOutOfBoundsException("Invalid index.");
+
+        for (int i = index; i < elements; i++) {
+            LIST[i] = LIST[i + 1];
+        }
+
+        elements--;
     }
 
     @Override
